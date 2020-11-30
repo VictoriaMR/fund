@@ -6,8 +6,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-	<script type="text/javascript" charset="utf-8" src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
-	<script type="text/javascript" charset="utf-8" src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script type="text/javascript" src="https://cdn.bootcss.com/vue/2.4.4/vue.min.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/axios@0.21.0/dist/axios.min.js"></script>
 </head>
 <style type="text/css">
 	*{margin: 0;padding: 0;box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;font-size: 12px;}
@@ -16,9 +16,116 @@
 	.pd10{padding: 10px;}
 	ul > li {list-style:none;}
 	th,td {text-align: left;}
-}
+	.flex{display: flex;}
+	.flex-l{margin-right: auto;}
+	.flex-r{margin-left: auto;}
+	img{width: 20px;height: 20px;}
+	h3 {line-height: 20px;}
+	.f14{font-size: 14px;}
+	.orange{color: orange;}
+	button {padding: 3px 5px;}
+	#add-btn{position: absolute;top: 50px; right: 20px;}
+	.modal .mask {position: fixed;height: 100%;width: 100%;background: #000;opacity: 0.7;top: 0;left: 0}
+	.modal .modal-body {background: #fff; height: 400px;left: 16px;width: calc(100% - 32px);position: fixed;top: calc(50% - 200px);border-radius: 5px;}
+	.modal .modal-title {height: 40px;line-height: 40px;border-bottom: 1px solid #ccc;font-weight: 600;font-size: 16px;text-align: center;}
+	input {width: 100%;height: 30px;line-height: 30px;margin-top: 5px;padding: 0 10px;}
+	.input-item label {font-size: 14px;}
+	.modal button {width: 44%;height: 30px;line-height: 20px;}
 </style>
 <body>
-	<h3 class="tc mt10">Vue页面</h3>
+	<div id="fundapp">
+		<div class="flex" style="margin-top: 50px;">
+			<h3 class="flex-r f14">鸿</h3>
+			&nbsp;&nbsp;&nbsp;
+			<img class="flex-l" src="/favicon.ico">
+			<button type="button" id="add-btn" v-on:click="modal.show = true;">新增</button>
+		</div>
+		<div class="pd10 mt10">
+			<table width="100%">
+				<thead>
+					<tr>
+						<th>名称</th>
+						<th>代码</th>
+						<th>费用</th>
+						<th>涨幅</th>
+						<th>盈利</th>
+					</tr>
+				</thead>
+				<tbody>
+					<template v-if="list.length > 0">
+						<tr v-for="data in list">
+							<td>{{data.name}}</td>
+							<td>{{data.name}}</td>
+							<td>{{data.name}}</td>
+							<td>{{data.name}}</td>
+							<td>{{data.name}}</td>
+						</tr>
+					</template>
+					<template  v-else>
+						<tr>
+							<td colspan="5" class="tc">
+								<span class="orange">请添加数据</span>
+							</td>
+						</tr>
+					</template>
+				</tbody>
+			</table>
+			<div class="modal" v-if="modal.show">
+		        <div class="mask"></div>
+		        <div class="modal-body">
+		        	<div class="modal-title">
+		        		新增基金
+		        	</div>
+		        	<form style="padding: 30px 20px;">
+		        		<div class="input-item">
+		        			<label>代码</label>
+		        			<input type="text" name="code" id="code" placeholder="请输入基金代码" autocomplete="off" maxlength="6">
+		        		</div>
+		        		<div class="input-item mt10">
+		        			<label>费用</label>
+		        			<input type="text" name="free" id="free" placeholder="请输入费用" autocomplete="off" maxlength="10">
+		        		</div>
+		        		<div class="flex" style="margin-top: 50px;">
+		        			<button class="flex-l" type="button" v-on:click="modal.show = false;">取消</button>
+		        			<button class="flex-r" type="button" v-on:click="add_funds">确定</button>
+		        		</div>
+		        	</form>
+		        </div>
+		    </div>
+		</div>
+	</div>
 </body>
+<script type="text/javascript">
+var fundapp = new Vue({
+    el:'#fundapp',
+    data:{
+        list: [],
+        modal: {show: false},
+    },
+    methods: {
+    	add_funds: function() {
+    		var code = document.getElementById('code').value;
+    		var free = document.getElementById('free').value;
+    		if (!code) {
+    			document.getElementById('code').focus();
+    			return false;
+    		}
+    		if (!free) {
+    			document.getElementById('code').focus();
+    			return false;
+    		}
+    		var data = localStorage.getItem('free_arr');
+    		console.log(typeof data)
+    		if (typeof data == 'undefined') {
+    			data = {};
+    		}
+    		if (!data[code]) {
+    			data[code] = {};
+    		}
+    		data[code].free = free;
+    		data[code].code = code;
+    	}
+    }
+});
+</script>
 </html>
