@@ -124,8 +124,9 @@ var fundapp = new Vue({
     		var datas = localStorage.getItem('free_arr');
     		if (datas === null) {
     			datas = {};
+    		} else {
+    			datas = JSON.parse(datas);
     		}
-    		datas = JSON.parse(datas);
 			if (typeof datas[code] == 'undefined') {
     			datas[code] = {};
     		}
