@@ -121,7 +121,7 @@ var fundapp = new Vue({
     			document.getElementById('code').focus();
     			return false;
     		}
-    		this.setData(code, {code: code, free: free});
+    		this.setData(code, {code: code, free: free, free_update: 0});
     		this.getData();
     	},
     	setData(code, data){
