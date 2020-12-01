@@ -18,6 +18,7 @@ foreach ($codeArr as $key => $code) {
 		'code' => $data['fundcode'],
 		'percent' => $data['gszzl'],
 		'free' => $code['free'],
+		'free_update' => $code['free_update'] ?? 0,
 		'win' => sprintf('%.2f', $code['free'] * $data['gszzl'] / 100),
 	];
 }
