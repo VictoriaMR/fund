@@ -25,6 +25,7 @@
 	.orange{color: orange;}
 	button {padding: 3px 5px;}
 	#add-btn{position: absolute;top: 50px; right: 20px;}
+	#update-btn{position: absolute;top: 50px; right: 65px;}
 	.modal .mask {position: fixed;height: 100%;width: 100%;background: #000;opacity: 0.7;top: 0;left: 0}
 	.modal .modal-body {background: #fff; height: 300px;left: 16px;width: calc(100% - 32px);position: fixed;top: calc(50% - 150px);border-radius: 5px;}
 	.modal .modal-title {height: 40px;line-height: 40px;border-bottom: 1px solid #ccc;font-weight: 600;font-size: 16px;text-align: center;}
@@ -56,7 +57,7 @@
 						<tr v-for="data in list">
 							<td>{{data.name}}</td>
 							<td>{{data.code}}</td>
-							<td>{{data.free}}</td>
+							<td>{{data.free_update ? data.free_update : data.free}}</td>
 							<td>{{data.percent}}</td>
 							<td>{{data.win}}</td>
 						</tr>
@@ -71,6 +72,7 @@
 				</tbody>
 			</table>
 			<p class="mt10" v-if="total > 0">盈利总额: {{total}}</p>
+			<p class="mt10" v-if="total_percent > 0">总涨幅: {{total_percent}}</p>
 			<div class="modal" v-if="modal.show">
 		        <div class="mask"></div>
 		        <div class="modal-body">
@@ -104,6 +106,8 @@ var fundapp = new Vue({
         modal: {show: false},
         standby: true,
         total: 0,
+        total_percent: null,
+        update_btn: false,
     },
     methods: {
     	add_funds: function() {
@@ -137,10 +141,18 @@ var fundapp = new Vue({
     		this.getData();
     		this.modal.show = false;
     	},
-    	getData() {
-    		console.log(this.standby)
+    	getData(type) {
     		if (!this.standby) {
     			return false;
+    		}
+    		var time = this.getTime();
+    		if (type === 1) {
+		    	if (time > 910 || time < 570) {
+		    		return false;
+		    	}
+    		}
+    		if (time > 910) {
+    			this.update_btn = true;
     		}
     		var datas = localStorage.getItem('free_arr');
     		if (datas === null) {
@@ -153,17 +165,66 @@ var fundapp = new Vue({
     		axios.post('/data.php', datas).then(function (res) {
              	_this.list = res.data.list;
              	_this.total = res.data.total;
+             	_this.total_percent = res.data.total_percent;
              	_this.standby = true;
+             	if (res.data.can_update) {
+             		_this.update_free();
+             	}
             }).catch(function(res) {
             	_this.standby = true;
             	console.log(res, 'error');
             });
     	},
+    	update_free() {
+    		var now = this.check_can_update();
+    		if (!now) {
+    			return false;
+    		}
+    		var list = this.list;
+    		localStorage.setItem('update_at', now);
+    		for (var i in list) {
+    			this.setData(list[i].code, {free_update: (parseFloat(list[i].free) + parseFloat(list[i].win)).toFixed(2)});
+    		}
+    	},
+    	init_free() {
+    		var time = this.getTime();
+    		if (time >= 570 && time <= 900) {
+    			var datas = localStorage.getItem('free_arr');
+    			if (datas === null) {
+	    			return false;
+	    		}
+	    		for (var i in datas) {
+	    			if (datas[i].free_update > 0) {
+	    				this.setData(datas[i].code, {free: datas[i].free_update, free_update: 0});
+	    			}
+	    		}
+    		}
+    	},
+    	check_can_update() {
+    		var last = localStorage.getItem('update_at');
+    		var now = this.getTime('day');
+    		if (last >= now) {
+    			return false;
+    		}
+    		return now;
+    	},
+    	getTime(type) {
+    		var now = new Date();
+    		switch(type) {
+    			case 'day':
+    				return now.getFullYear()*365 + now.getMonth()*30 + now.getDate();
+    				break;
+    			default:
+    				return now.getHours()*60 + now.getMinutes();
+    				break;
+    		}
+    	}
     },
     created() {
-    	this.getData();
+    	this.init_free();
+    	this.getData(0);
     	window.setInterval(() => {
-    		this.getData();
+    		this.getData(1);
     	}, 2000);
     }
 });
