@@ -1,6 +1,7 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header('application/json;charset=UTF-8');
+ini_set('date.timezone','Asia/Shanghai');
 
 $param = file_get_contents('php://input');
 $codeArr = json_decode($param, true);
