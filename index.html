@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>红鸡</title>
+	<title>鸿鸡</title>
 	<link rel="shortcut icon" href="/favicon.ico">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
@@ -70,6 +70,7 @@
 					</template>
 				</tbody>
 			</table>
+			<p class="mt10" v-if="total > 0">盈利总额: {{total}}</p>
 			<div class="modal" v-if="modal.show">
 		        <div class="mask"></div>
 		        <div class="modal-body">
@@ -102,6 +103,7 @@ var fundapp = new Vue({
         list: [],
         modal: {show: false},
         standby: true,
+        total: 0,
     },
     methods: {
     	add_funds: function() {
