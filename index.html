@@ -71,8 +71,8 @@
 					</template>
 				</tbody>
 			</table>
-			<p class="mt10" v-if="total > 0">盈利总额: {{total}}</p>
-			<p class="mt10" v-if="total_percent > 0">总涨幅: {{total_percent}}</p>
+			<p class="mt10" v-if="total != 0">盈利总额: {{total}}</p>
+			<p class="mt10" v-if="total_percent != 0">总涨幅: {{total_percent}}</p>
 			<div class="modal" v-if="modal.show">
 		        <div class="mask"></div>
 		        <div class="modal-body">
@@ -106,7 +106,7 @@ var fundapp = new Vue({
         modal: {show: false},
         standby: true,
         total: 0,
-        total_percent: null,
+        total_percent: 0,
         update_btn: false,
     },
     methods: {
