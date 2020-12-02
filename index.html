@@ -193,6 +193,7 @@ var fundapp = new Vue({
     			if (datas === null) {
 	    			return false;
 	    		}
+                datas = JSON.parse(datas);
 	    		for (var i in datas) {
 	    			if (datas[i].free_update > 0) {
 	    				this.setData(datas[i].code, {free: datas[i].free_update, free_update: 0});
