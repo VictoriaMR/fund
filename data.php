@@ -23,6 +23,7 @@ foreach ($codeArr as $key => $code) {
 	];
 }
 if (!empty($result['list'])) {
+	array_multisort($result['list'], SORT_DESC, array_column($result['list'], 'win'));
 	$he = array_sum(array_column($result['list'], 'free'));
 	$result['total'] = sprintf('%.2f', array_sum(array_column($result['list'], 'win')));
 	$result['total_percent'] = sprintf('%.2f', $result['total'] / $he * 100);
