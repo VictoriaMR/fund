@@ -13,7 +13,7 @@ foreach ($codeArr as $key => $code) {
 	$data = @file_get_contents('http://fundgz.1234567.com.cn/js/'.$key.'.js?rt='.time());
 	if (empty($data)) continue;
 	$data = json_decode(rtrim(ltrim($data, 'jsonpgz('), ');'), true);
-	$result['list'][] = [
+	$result['list'][$data['fundcode']] = [
 		'name' => $data['name'],
 		'code' => $data['fundcode'],
 		'percent' => $data['gszzl'],
@@ -23,7 +23,13 @@ foreach ($codeArr as $key => $code) {
 	];
 }
 if (!empty($result['list'])) {
-	array_multisort($result['list'], SORT_DESC, array_column($result['list'], 'win'));
+	$temp = array_column($result['list'], 'win', 'code');
+	arsort($temp, SORT_NUMERIC);
+	$arr = [];
+	foreach ($temp as $key => $value) {
+		$arr[] = $result['list'][$key];
+	}
+	$result['list'] = $arr;
 	$he = array_sum(array_column($result['list'], 'free'));
 	$result['total'] = sprintf('%.2f', array_sum(array_column($result['list'], 'win')));
 	$result['total_percent'] = sprintf('%.2f', $result['total'] / $he * 100);
