@@ -5,21 +5,19 @@ ini_set('date.timezone','Asia/Shanghai');
 
 $param = file_get_contents('php://input');
 $codeArr = json_decode($param, true);
-if (empty($codeArr)) {
-	exit('12312');
-}
-$result = ['list'=>[], 'total' => 0];
+$result = ['list'=>[], 'total' => 0, 'total_percent' => 0];
 foreach ($codeArr as $key => $code) {
 	$data = @file_get_contents('http://fundgz.1234567.com.cn/js/'.$key.'.js?rt='.time());
-	if (empty($data)) continue;
-	$data = json_decode(rtrim(ltrim($data, 'jsonpgz('), ');'), true);
-	$result['list'][$data['fundcode']] = [
-		'name' => $data['name'],
-		'code' => $data['fundcode'],
-		'percent' => $data['gszzl'],
+	if (!empty($data)) {
+		$data = json_decode(rtrim(ltrim($data, 'jsonpgz('), ');'), true);
+	}
+	$result['list'][$key] = [
+		'name' => $data['name'] ?? '',
+		'code' => $key,
+		'percent' => $data['gszzl'] ?? 0,
 		'free' => $code['free'],
 		'free_update' => $code['free_update'] ?? 0,
-		'win' => sprintf('%.2f', $code['free'] * $data['gszzl'] / 100),
+		'win' => sprintf('%.2f', $code['free'] * $data['gszzl'] ?? 1 / 100),
 	];
 }
 if (!empty($result['list'])) {

@@ -54,7 +54,7 @@
 				</thead>
 				<tbody>
 					<template v-if="list.length > 0">
-						<tr v-for="data in list">
+						<tr v-for="data in list" @touchstart="gotouchstart(data.code)" @touchmove="gotouchmove" @touchend="gotouchend">
 							<td>{{data.name}}</td>
 							<td>{{data.code}}</td>
 							<td>{{data.free_update ? data.free_update : data.free}}</td>
@@ -99,6 +99,7 @@
 	</div>
 </body>
 <script type="text/javascript">
+var timeOutEvent=0;//定时器  
 var fundapp = new Vue({
     el:'#fundapp',
     data:{
@@ -110,7 +111,7 @@ var fundapp = new Vue({
         update_btn: false,
     },
     methods: {
-    	add_funds: function() {
+    	add_funds() {
     		var code = document.getElementById('code').value;
     		var free = document.getElementById('free').value;
     		if (!code) {
@@ -219,7 +220,34 @@ var fundapp = new Vue({
     				return now.getHours()*60 + now.getMinutes();
     				break;
     		}
-    	}
+    	},
+        gotouchstart(code){
+            let that = this;
+            clearTimeout(timeOutEvent);//清除定时器
+            timeOutEvent = 0;
+            timeOutEvent = setTimeout(function(){
+                //执行长按要执行的内容，
+                that.delete_fund(code);
+            }, 1000);//这里设置定时
+        },
+        //手释放，如果在500毫秒内就释放，则取消长按事件，此时可以执行onclick应该执行的事件
+        gotouchend(){
+            clearTimeout(timeOutEvent);
+            if(timeOutEvent!=0){
+                //这里写要执行的内容（尤如onclick事件
+            }
+        },
+        //如果手指有移动，则取消所有事件，此时说明用户只是要移动而不是长按 
+        gotouchmove(){
+            clearTimeout(timeOutEvent);//清除定时器
+            timeOutEvent = 0;
+        },
+        delete_fund(code){
+            var datas = localStorage.getItem('free_arr');
+            datas = JSON.parse(datas);
+            delete datas[code];
+            localStorage.setItem('free_arr', JSON.stringify(datas));
+        },
     },
     created() {
     	this.init_free();
